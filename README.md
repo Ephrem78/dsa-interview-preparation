@@ -12,6 +12,7 @@ write the solution independently, and understand its complexity.
 ### 01. Arrays and Hashing
 
 - [Contains Duplicate](01-arrays-and-hashing/contains_duplicate.py)
+- [Valid Anagram](01-arrays-and-hashing/valid_anagram.py)
 
 ## My Learning Method
 
