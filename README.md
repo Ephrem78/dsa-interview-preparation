@@ -13,6 +13,8 @@ write the solution independently, and understand its complexity.
 
 - [Contains Duplicate](01-arrays-and-hashing/contains_duplicate.py)
 - [Valid Anagram](01-arrays-and-hashing/valid_anagram.py)
+- [two_sum](01-arrays-and-hashing/valid_anagram.py)
+
 
 ## My Learning Method
 
