@@ -1,275 +1,161 @@
+
 """
 ========================================================
-                 SLIDING WINDOW MAXIMUM
+SLIDING WINDOW MAXIMUM
 ========================================================
-
 
 1. PROBLEM DESCRIPTION
 --------------------------------------------------------
 
 You are given:
-
-nums = an array of integers
-k = the size of the sliding window
+- nums: a list of integers.
+- k: the size of the sliding window.
 
 A sliding window is a group of k consecutive numbers.
+The window moves one position to the right each time.
 
-The window starts at the beginning of the array.
-
-After checking the maximum number in the window,
-the window moves one position to the right.
-
-For every window, find the maximum number.
-
-Return a list containing all maximum numbers.
-
+Find the maximum number in every window and return
+a list containing all the maximum numbers.
 
 IMPORTANT:
-
-1. The window always contains k numbers.
-2. The window moves one position to the right each time.
-3. We find the largest number inside each window.
+1. Every window contains exactly k numbers.
+2. The window moves one position to the right.
+3. We find the largest number in each window.
 4. We return all maximum numbers in a list.
-
 
 2. EXAMPLES
 --------------------------------------------------------
 
 Example 1:
-
 Input:
-
 nums = [1, 3, -1, -3, 5, 3, 6, 7]
 k = 3
 
 Windows:
-
-[1, 3, -1], -3, 5, 3, 6, 7
-
-1, [3, -1, -3], 5, 3, 6, 7
-
-1, 3, [-1, -3, 5], 3, 6, 7
-
-1, 3, -1, [-3, 5, 3], 6, 7
-
-1, 3, -1, -3, [5, 3, 6], 7
-
-1, 3, -1, -3, 5, [3, 6, 7]
-
-
-Maximum of each window:
-
-[3, 3, 5, 5, 6, 7]
+[1, 3, -1]
+[3, -1, -3]
+[-1, -3, 5]
+[-3, 5, 3]
+[5, 3, 6]
+[3, 6, 7]
 
 Expected:
-
 [3, 3, 5, 5, 6, 7]
-
 
 Example 2:
-
-Input:
-
-nums = [1]
-k = 1
-
-Window:
-
-[1]
-
-Expected:
-
-[1]
-
+Input: nums = [1], k = 1
+Expected: [1]
 
 Example 3:
-
-Input:
-
-nums = [1, -1]
-k = 1
-
-Windows:
-
-[1], -1
-
-1, [-1]
-
-Expected:
-
-[1, -1]
-
+Input: nums = [1, -1], k = 1
+Expected: [1, -1]
 
 Example 4:
-
-Input:
-
-nums = [9, 11]
-k = 2
-
-Window:
-
-[9, 11]
-
-Expected:
-
-[11]
-
+Input: nums = [9, 11], k = 2
+Expected: [11]
 
 Example 5:
-
-Input:
-
-nums = [4, -2]
-k = 2
-
-Window:
-
-[4, -2]
-
-Expected:
-
-[4]
-
+Input: nums = [4, -2], k = 2
+Expected: [4]
 
 Example 6:
-
-Input:
-
-nums = [7, 2, 4]
-k = 2
-
-Windows:
-
-[7, 2], 4
-
-7, [2, 4]
-
-Expected:
-
-[7, 4]
+Input: nums = [7, 2, 4], k = 2
+Expected: [7, 4]
 
 
 3. APPROACH: SLIDING WINDOW + DEQUE
 --------------------------------------------------------
 
 We use:
-
 - Sliding Window
 - Deque
-- Two Pointers / Indices
+- Indices
 - Monotonic Decreasing Queue
 
 WHAT IS A DEQUE?
 
 Deque means Double-Ended Queue.
 
-It is a data structure that allows us to:
+It allows us to add and remove elements from both ends.
 
-1. Add an element at the beginning.
-2. Add an element at the end.
-3. Remove an element from the beginning.
-4. Remove an element from the end.
+Python provides deque through:
 
-In Python, we use:
-
-from collections import deque
-
+    from collections import deque
 
 WHY DO WE USE A DEQUE?
 
 We need to find the maximum number in every window.
 
 A simple solution checks every number in every window.
+That can take O(N * K) time.
 
-But that can take O(N * K) time.
+A deque helps us solve the problem in O(N) time.
 
-We can do better with a deque.
-
-Our deque stores INDICES, not the actual numbers.
-
-Example:
-
-nums = [1, 3, -1]
-
-The indices are:
-
-Index:  0  1   2
-Value:  1  3  -1
-
-If our deque contains:
-
-[1, 2]
-
-It means we are storing the indices 1 and 2.
-
-The actual values are:
-
-nums[1] = 3
-nums[2] = -1
-
-
-IMPORTANT DEQUE RULE:
-
-The values represented by indices in the deque
-are kept in decreasing order.
+IMPORTANT: OUR DEQUE STORES INDICES, NOT NUMBERS.
 
 Example:
 
-Deque indices:
+    nums = [1, 3, -1]
 
-[1, 2, 3]
+    Index:  0  1   2
+    Value:  1  3  -1
 
-Corresponding values:
+If the deque contains:
 
-[3, 2, 1]
+    [1, 2]
 
-The largest value is always at the FRONT.
+It stores indices 1 and 2.
+
+Their values are:
+
+    nums[1] = 3
+    nums[2] = -1
+
+DEQUE RULE:
+
+The values represented by the indices are kept
+in decreasing order.
+
+Example:
+
+    Deque indices: [1, 2, 3]
+    Values:        [5, 3, 1]
+
+The largest value stays at the FRONT.
 
 Therefore:
 
-deque[0] gives us the index of the maximum number.
+    deque_indices[0]          -> index of maximum
+    nums[deque_indices[0]]    -> maximum number
 
-nums[deque[0]] gives us the maximum number itself.
-
-
-WHY DO WE REMOVE SMALLER NUMBERS?
+WHY REMOVE SMALLER NUMBERS?
 
 Example:
 
-nums = [2, 5]
+    nums = [2, 5]
 
 We are processing 5.
 
 The previous number is 2.
 
-Can 2 ever become the maximum in a future window
+Can 2 become the maximum in a future window
 that also contains 5?
 
-No.
-
-Why?
-
-Because 5 is bigger than 2 and appears after it.
+No. The number 5 is bigger and appears after 2.
 
 Whenever both are inside a window, 5 is the maximum.
 
 Therefore, we remove the index of 2.
 
-This keeps our deque useful and efficient.
-
 
 4. COMPLETE PYTHON SOLUTION
 --------------------------------------------------------
 
-The following Python code is a direct conversion
-of your Java algorithm.
+This is the Python conversion of your Java algorithm.
 
 Python uses collections.deque instead of Java's
 Deque and LinkedList.
-
 """
-
 
 from collections import deque
 
@@ -298,20 +184,16 @@ class Solution:
             while deque_indices and deque_indices[0] < i - k + 1:
                 deque_indices.popleft()
 
-            # Step 7: Remove indices whose values are smaller
-            # than the current number.
+            # Step 7: Remove smaller values from the back.
             while (deque_indices and
                    nums[deque_indices[-1]] < nums[i]):
                 deque_indices.pop()
 
-            # Step 8: Add the current index to the deque.
+            # Step 8: Add the current index.
             deque_indices.append(i)
 
-            # Step 9: Start saving answers when the first
-            # complete window has been formed.
+            # Step 9: Save the answer when a full window exists.
             if i >= k - 1:
-
-                # Get the maximum number from the front index.
                 result[i - k + 1] = nums[deque_indices[0]]
 
         # Step 10: Return all window maximums.
@@ -322,1293 +204,702 @@ class Solution:
 5. COMPLETE ELS10 CODE EXPLANATION
 --------------------------------------------------------
 
+IMPORT:
 
-FIRST:
-
-from collections import deque
-
-
-What does this mean?
+    from collections import deque
 
 collections is a Python module.
-
 A module is a collection of ready-made tools.
 
 deque is one of those tools.
 
-We import deque because we need a queue that can
-add and remove elements from both ends.
+We import deque because we need a data structure
+that can add and remove elements from both ends.
 
+--------------------------------------------------------
 
-NEXT:
+CLASS:
 
-class Solution:
+    class Solution:
 
+A class is a container for related code.
 
-What does this mean?
+We create a class called Solution because
+this is the format expected by LeetCode.
 
-We create a class called Solution.
+--------------------------------------------------------
 
-A class is like a container for related code.
+FUNCTION:
 
-Our solution method will be inside this class.
+    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:
 
+def creates a function.
 
-NEXT:
-
-def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:
-
-
-What does this mean?
-
-We create a method called maxSlidingWindow.
+maxSlidingWindow is the function name.
 
 It receives:
+- self: refers to the current Solution object.
+- nums: the list of numbers.
+- k: the size of the window.
 
-nums:
-The list of numbers.
+-> list[int] tells us that the function returns
+a list of integers.
 
-k:
-The size of the sliding window.
+--------------------------------------------------------
 
-It returns:
+STEP 1: CHECK INVALID INPUTS
 
-A list containing the maximum number from every window.
+    if not nums or k <= 0 or k > len(nums):
+        return []
 
+if checks whether a condition is True.
 
-STEP 1:
-
-if not nums or k <= 0 or k > len(nums):
-    return []
-
-
-Let's understand every part.
-
-
-if:
-
-Checks whether a condition is true.
-
-
-not nums:
-
-Checks whether nums is empty.
+not nums checks whether the list is empty.
 
 Example:
+    nums = []
 
-nums = []
+The condition not nums is True.
 
-This condition is True.
-
-
-k <= 0:
-
-Checks whether k is zero or negative.
-
+k <= 0 checks whether k is zero or negative.
 A window cannot have zero or negative size.
 
-
-k > len(nums):
-
-Checks whether the window is bigger than the array.
+k > len(nums) checks whether the window is bigger
+than the entire array.
 
 Example:
-
-nums = [1, 2, 3]
-k = 5
+    nums = [1, 2, 3]
+    k = 5
 
 We cannot create a window of five numbers
 from an array containing only three numbers.
 
+or means at least one condition must be True.
 
-or:
+return [] sends an empty list back and stops
+the function.
 
-Means at least one condition must be True.
+--------------------------------------------------------
 
+STEP 2: GET THE ARRAY LENGTH
 
-return []:
+    n = len(nums)
 
-Returns an empty list.
-
-We stop because the input is invalid.
-
-
-STEP 2:
-
-n = len(nums)
-
-
-What does this do?
-
-len(nums) counts how many numbers are inside nums.
+len() counts the number of elements in a list.
 
 Example:
+    nums = [1, 3, -1, -3, 5, 3, 6, 7]
 
-nums = [1, 3, -1, -3, 5, 3, 6, 7]
-
-len(nums) = 8
+    len(nums) = 8
 
 Therefore:
+    n = 8
 
-n = 8
+We use n to control the loop and calculate
+the size of the result list.
 
+--------------------------------------------------------
 
-Why do we need n?
+STEP 3: CREATE THE RESULT LIST
 
-We use it to control the loop.
+    result = [0] * (n - k + 1)
 
-We also use it to calculate the result size.
+This creates a list with enough spaces
+for all the answers.
 
-
-STEP 3:
-
-result = [0] * (n - k + 1)
-
-
-What does this do?
-
-Creates a list with enough spaces for all answers.
-
-Let's understand it.
-
-
-n = 8
-k = 3
-
+Example:
+    n = 8
+    k = 3
 
 Calculation:
-
-n - k + 1
-
-8 - 3 + 1 = 6
-
+    n - k + 1
+    8 - 3 + 1 = 6
 
 Therefore:
+    result = [0, 0, 0, 0, 0, 0]
 
-result = [0, 0, 0, 0, 0, 0]
+WHY SIX?
 
+An array of eight numbers has six possible
+windows of size three.
 
-Why six?
+We need six answer spaces.
 
-Because an array of eight numbers has six
-possible windows of size three.
+--------------------------------------------------------
 
-Example:
+STEP 4: CREATE THE DEQUE
 
-[1, 3, -1]
-[3, -1, -3]
-[-1, -3, 5]
-[-3, 5, 3]
-[5, 3, 6]
-[3, 6, 7]
+    deque_indices = deque()
 
-There are six windows.
+This creates an empty deque.
 
-Therefore, we need six answer spaces.
-
-
-STEP 4:
-
-deque_indices = deque()
-
-
-What does this do?
-
-Creates an empty deque.
-
-IMPORTANT:
-
-We store INDICES inside this deque.
-
-We do not store the actual numbers.
+IMPORTANT: We store INDICES, not actual numbers.
 
 Example:
+    nums = [1, 3, -1]
 
-nums = [1, 3, -1]
-
-Index:
-
-0  1   2
-
-Value:
-
-1  3  -1
-
+    Index:  0  1   2
+    Value:  1  3  -1
 
 If:
+    deque_indices = [1, 2]
 
-deque_indices = [1, 2]
-
-It means:
-
-We are storing index 1 and index 2.
+It means we store index 1 and index 2.
 
 Their values are:
+    nums[1] = 3
+    nums[2] = -1
 
-nums[1] = 3
-nums[2] = -1
+WHY STORE INDICES?
 
-
-Why store indices?
-
-Because we need to know:
-
+We need to know:
 1. The value of each number.
 2. Where each number is located.
 3. Whether an index is outside the current window.
 
+--------------------------------------------------------
 
-STEP 5:
+STEP 5: VISIT EVERY INDEX
 
-for i in range(n):
+    for i in range(n):
 
+range(n) produces the indices from 0 to n - 1.
 
-What does this mean?
+If n = 8:
 
-We visit every index in nums.
-
-range(n) produces:
-
-0, 1, 2, 3, 4, 5, 6, 7
-
-If n = 8.
+    0, 1, 2, 3, 4, 5, 6, 7
 
 i represents the current index.
 
 Example:
+    i = 0 -> nums[i] = 1
+    i = 1 -> nums[i] = 3
+    i = 2 -> nums[i] = -1
 
-When i = 0:
+The loop visits every number once.
 
-nums[i] = nums[0] = 1
+--------------------------------------------------------
 
-When i = 1:
+STEP 6: REMOVE EXPIRED INDICES
 
-nums[i] = nums[1] = 3
+    while deque_indices and deque_indices[0] < i - k + 1:
+        deque_indices.popleft()
 
-When i = 2:
+This removes indices that are outside
+the current sliding window.
 
-nums[i] = nums[2] = -1
+Let's understand each part.
 
+deque_indices checks whether the deque contains elements.
+An empty deque behaves like False.
 
-STEP 6:
+We must not remove an element from an empty deque.
 
-while deque_indices and deque_indices[0] < i - k + 1:
+deque_indices[0] gets the first index in the deque.
 
-
-This is one of the most important lines.
-
-
-First part:
-
-deque_indices
-
-
-Checks whether the deque contains anything.
-
-An empty deque is treated as False.
-
-A deque with elements is treated as True.
-
-We cannot remove an element from an empty deque.
-
-
-Second part:
-
-deque_indices[0]
-
-
-Gets the first element of the deque.
-
-Remember:
-
-The deque stores indices.
-
-Therefore, deque_indices[0] is the oldest index
-currently stored at the front.
-
-
-Third part:
-
-i - k + 1
-
-
-Calculates the beginning index of the current window.
+i - k + 1 calculates the beginning index
+of the current window.
 
 Example:
-
-i = 4
-k = 3
+    i = 4
+    k = 3
 
 Calculation:
-
-4 - 3 + 1 = 2
+    4 - 3 + 1 = 2
 
 The current window starts at index 2.
 
+Now imagine:
+    deque_indices = [0, 2, 3]
 
-Therefore:
+The first index is 0.
 
-deque_indices[0] < i - k + 1
+Check:
+    0 < 2
 
+This is True.
 
-Checks whether the first stored index is outside
-the current window.
+Index 0 is outside the current window.
 
-If it is outside, we must remove it.
-
-
-deque_indices.popleft()
-
-
-What does this do?
-
-Removes the first element from the deque.
-
-Example:
+popleft() removes the first element.
 
 Before:
+    [0, 2, 3]
 
-[0, 2, 3]
+After:
+    [2, 3]
 
-After popleft():
-
-[2, 3]
-
-
-Why?
+WHY DO WE REMOVE IT?
 
 Because index 0 is no longer inside the current window.
+It cannot be the answer for this window.
 
+--------------------------------------------------------
 
-STEP 7:
+STEP 7: REMOVE SMALLER VALUES FROM THE BACK
 
-while (deque_indices and
-       nums[deque_indices[-1]] < nums[i]):
+    while (deque_indices and
+           nums[deque_indices[-1]] < nums[i]):
+        deque_indices.pop()
 
+This keeps the deque values in decreasing order.
 
-This is another very important part.
+deque_indices checks whether the deque is empty.
 
+deque_indices[-1] gets the last index.
 
-First:
+Remember:
+    deque_indices[0]  -> first index
+    deque_indices[-1] -> last index
 
-deque_indices
-
-
-Checks whether the deque is empty.
-
-
-Second:
-
-deque_indices[-1]
-
-
-Gets the last index in the deque.
-
-IMPORTANT:
-
-- deque_indices[0] means the first index.
-- deque_indices[-1] means the last index.
-
-
-Third:
-
-nums[deque_indices[-1]]
-
-
-Gets the actual number at the last stored index.
-
+nums[deque_indices[-1]] gets the actual value
+at the last stored index.
 
 Example:
-
-nums = [2, 5]
-
-deque_indices = [0]
+    nums = [2, 5]
+    deque_indices = [0]
+    i = 1
 
 Then:
+    deque_indices[-1] = 0
+    nums[0] = 2
+    nums[i] = 5
 
-deque_indices[-1] = 0
+The comparison becomes:
+    2 < 5
 
-nums[deque_indices[-1]] = nums[0] = 2
+This is True.
 
+WHY REMOVE 2?
 
-Fourth:
+Because 5 is bigger and comes after 2.
 
-nums[i]
+If a future window contains both numbers,
+5 will always be bigger.
 
+So 2 is no longer useful.
 
-Gets the current number we are processing.
-
-Example:
-
-i = 1
-
-nums[i] = nums[1] = 5
-
-
-The comparison:
-
-nums[deque_indices[-1]] < nums[i]
-
-
-Means:
-
-Is the last stored number smaller than the
-current number?
-
-
-Example:
-
-2 < 5
-
-True.
-
-
-Why do we remove the smaller number?
-
-Because the new number is bigger.
-
-The new number is also further to the right.
-
-So the smaller old number cannot be the maximum
-in any future window that contains the new number.
-
-We do not need to keep it.
-
-
-deque_indices.pop()
-
-
-What does this do?
-
-Removes the last element from the deque.
-
-Example:
-
-Before:
-
-[0]
-
-After pop():
-
-[]
-
+pop() removes the last element from the deque.
 
 IMPORTANT DIFFERENCE:
 
-popleft() removes from the FRONT.
+    popleft() -> removes from the FRONT.
+    pop()     -> removes from the BACK.
 
-pop() removes from the BACK.
+--------------------------------------------------------
 
+STEP 8: ADD THE CURRENT INDEX
 
-STEP 8:
+    deque_indices.append(i)
 
-deque_indices.append(i)
-
-
-What does this do?
-
-Adds the current index to the end of the deque.
+append() adds an element to the end of a list
+or deque.
 
 Example:
-
-i = 3
-
-Before:
-
-[1, 2]
+    deque_indices = [1, 2]
+    i = 3
 
 After:
+    deque_indices = [1, 2, 3]
 
-[1, 2, 3]
+We add the current index because its number
+may become the maximum in this or a future window.
 
+--------------------------------------------------------
 
-Why add the index?
+STEP 9: CHECK WHETHER A COMPLETE WINDOW EXISTS
 
-Because the current number may become the maximum
-in this window or a future window.
+    if i >= k - 1:
 
-
-STEP 9:
-
-if i >= k - 1:
-
-
-What does this mean?
-
-We only save an answer after the first complete
+We save an answer only after the first complete
 window has been formed.
 
-
 Example:
+    k = 3
 
-k = 3
-
-The first window needs three numbers.
-
-Their indices are:
-
-0, 1, 2
-
+The first window contains indices:
+    0, 1, 2
 
 When i = 0:
-
-We have one number.
-
-Not enough.
-
+    One number. Not enough.
 
 When i = 1:
-
-We have two numbers.
-
-Not enough.
-
+    Two numbers. Not enough.
 
 When i = 2:
-
-We have three numbers.
-
-The first complete window is ready.
-
+    Three numbers. The first window is complete.
 
 Therefore:
+    i >= k - 1
 
-i >= k - 1
+When i is at least 2, we can save answers.
 
-When:
+--------------------------------------------------------
 
-i >= 2
+STEP 10: SAVE THE MAXIMUM
 
-We can start saving answers.
+    result[i - k + 1] = nums[deque_indices[0]]
 
+deque_indices[0] gets the first index in the deque.
 
-STEP 10:
-
-result[i - k + 1] = nums[deque_indices[0]]
-
-
-This line saves the maximum number.
-
-
-Let's understand it.
-
-
-deque_indices[0]
-
-Gets the index at the FRONT of the deque.
-
-Why?
+Why the first index?
 
 Because the deque keeps its values in decreasing order.
+The largest value stays at the front.
 
-The biggest value is always at the front.
-
-
-nums[deque_indices[0]]
-
-Uses that index to get the actual maximum number.
-
+nums[deque_indices[0]] uses that index
+to get the actual maximum number.
 
 Example:
-
-nums = [1, 3, -1]
-
-deque_indices = [1, 2]
+    nums = [1, 3, -1]
+    deque_indices = [1, 2]
 
 The front index is:
-
-deque_indices[0] = 1
+    deque_indices[0] = 1
 
 The actual number is:
-
-nums[1] = 3
+    nums[1] = 3
 
 Therefore, the maximum is 3.
 
+Now calculate where to save the answer:
 
-Now:
+    i - k + 1
 
-i - k + 1
+If:
+    i = 2
+    k = 3
 
-
-Calculates where to save the answer.
-
-Example:
-
-i = 2
-k = 3
-
-2 - 3 + 1 = 0
+Then:
+    2 - 3 + 1 = 0
 
 Therefore:
-
-result[0] = 3
-
+    result[0] = 3
 
 For the next window:
+    i = 3
+    k = 3
 
-i = 3
-k = 3
+Then:
+    result[1] = maximum of the second window.
 
-3 - 3 + 1 = 1
+--------------------------------------------------------
 
-Therefore:
+STEP 11: RETURN THE RESULT
 
-result[1] = maximum of the second window.
+    return result
 
-
-STEP 11:
-
-return result
-
-
-What does this do?
-
-Returns the completed list of maximum numbers.
+This sends the completed list back.
 
 Example:
-
-[3, 3, 5, 5, 6, 7]
+    [3, 3, 5, 5, 6, 7]
 
 
 6. COMPLETE DRY RUN
 --------------------------------------------------------
 
-Let's follow the algorithm step by step.
-
 INPUT:
 
-nums = [1, 3, -1, -3, 5, 3, 6, 7]
-k = 3
+    nums = [1, 3, -1, -3, 5, 3, 6, 7]
+    k = 3
 
+INITIAL VALUES:
 
-Initial values:
-
-n = 8
-
-result = [0, 0, 0, 0, 0, 0]
-
-deque_indices = []
-
+    n = 8
+    result = [0, 0, 0, 0, 0, 0]
+    deque_indices = []
 
 IMPORTANT:
-
 The deque stores indices.
-
-We will show both the indices and their values.
-
+We will show both indices and their values.
 
 --------------------------------------------------------
 ITERATION 1
 --------------------------------------------------------
 
 i = 0
+Current number = nums[0] = 1
 
-Current number:
+A. Remove expired indices.
+The deque is empty. Nothing happens.
 
-nums[0] = 1
+B. Remove smaller values.
+The deque is empty. Nothing happens.
 
+C. Add current index:
+    deque_indices = [0]
+    Values = [1]
 
-STEP A:
+D. Check:
+    i >= k - 1
+    0 >= 2 -> False
 
-Remove indices outside the window.
-
-No indices exist.
-
-Nothing happens.
-
-
-STEP B:
-
-Remove smaller numbers from the back.
-
-The deque is empty.
-
-Nothing happens.
-
-
-STEP C:
-
-Add current index.
-
-deque_indices = [0]
-
-Values:
-
-[1]
-
-
-STEP D:
-
-Check:
-
-i >= k - 1
-
-0 >= 2
-
-False.
-
-We do not save an answer yet.
-
+No answer is saved yet.
 
 --------------------------------------------------------
 ITERATION 2
 --------------------------------------------------------
 
 i = 1
+Current number = nums[1] = 3
 
-Current number:
-
-nums[1] = 3
-
-
-STEP A:
-
-Remove expired indices.
-
+A. Remove expired indices.
 Nothing happens.
 
-
-STEP B:
-
-Compare the last value with current value.
-
-Last value = 1
-
-Current value = 3
-
-1 < 3
-
-True.
+B. Compare the last value with 3:
+    1 < 3 -> True
 
 Remove index 0.
 
+    deque_indices = []
 
-Deque:
+C. Add index 1:
+    deque_indices = [1]
+    Values = [3]
 
-[]
+D. Check:
+    1 >= 2 -> False
 
-
-STEP C:
-
-Add current index 1.
-
-Deque indices:
-
-[1]
-
-Values:
-
-[3]
-
-
-STEP D:
-
-Check:
-
-1 >= 2
-
-False.
-
-No answer yet.
-
+No answer is saved yet.
 
 --------------------------------------------------------
 ITERATION 3
 --------------------------------------------------------
 
 i = 2
+Current number = nums[2] = -1
 
-Current number:
-
-nums[2] = -1
-
-
-STEP A:
-
-Remove expired indices.
-
-Current window starts at:
-
-i - k + 1
-
-2 - 3 + 1 = 0
+A. Calculate the window start:
+    i - k + 1
+    2 - 3 + 1 = 0
 
 Index 1 is still inside the window.
-
 Nothing is removed.
 
-
-STEP B:
-
-Compare last value with current value.
-
-3 < -1
-
-False.
+B. Compare:
+    3 < -1 -> False
 
 Keep index 1.
 
+C. Add index 2:
+    deque_indices = [1, 2]
+    Values = [3, -1]
 
-STEP C:
-
-Add current index 2.
-
-Deque indices:
-
-[1, 2]
-
-Values:
-
-[3, -1]
-
-
-STEP D:
-
-Check:
-
-2 >= 2
-
-True.
+D. Check:
+    2 >= 2 -> True
 
 The first complete window is ready.
 
-
 Maximum:
-
-nums[deque_indices[0]]
-
-nums[1] = 3
-
+    nums[deque_indices[0]]
+    nums[1] = 3
 
 Save:
-
-result[0] = 3
-
+    result[0] = 3
 
 Result:
-
-[3, 0, 0, 0, 0, 0]
-
+    [3, 0, 0, 0, 0, 0]
 
 Current window:
-
-[1, 3, -1]
-
+    [1, 3, -1]
 
 --------------------------------------------------------
 ITERATION 4
 --------------------------------------------------------
 
 i = 3
+Current number = nums[3] = -3
 
-Current number:
-
-nums[3] = -3
-
-
-STEP A:
-
-Current window starts at:
-
-3 - 3 + 1 = 1
-
-Deque indices:
-
-[1, 2]
+A. Window start:
+    3 - 3 + 1 = 1
 
 Index 1 is still valid.
 
-Nothing is removed.
-
-
-STEP B:
-
-Compare last value with current value.
-
-Last value = -1
-
-Current value = -3
-
--1 < -3
-
-False.
+B. Compare:
+    -1 < -3 -> False
 
 Keep index 2.
 
+C. Add index 3:
+    deque_indices = [1, 2, 3]
+    Values = [3, -1, -3]
 
-STEP C:
-
-Add index 3.
-
-Deque indices:
-
-[1, 2, 3]
-
-Values:
-
-[3, -1, -3]
-
-
-STEP D:
-
-The window is complete.
-
-Maximum:
-
-nums[1] = 3
-
+D. Maximum:
+    nums[1] = 3
 
 Save:
-
-result[1] = 3
-
+    result[1] = 3
 
 Result:
-
-[3, 3, 0, 0, 0, 0]
-
+    [3, 3, 0, 0, 0, 0]
 
 Current window:
-
-[3, -1, -3]
-
+    [3, -1, -3]
 
 --------------------------------------------------------
 ITERATION 5
 --------------------------------------------------------
 
 i = 4
+Current number = nums[4] = 5
 
-Current number:
-
-nums[4] = 5
-
-
-STEP A:
-
-Current window starts at:
-
-4 - 3 + 1 = 2
+A. Window start:
+    4 - 3 + 1 = 2
 
 Index 1 is outside the window.
 
-Remove index 1.
+Remove index 1:
+    deque_indices = [2, 3]
 
+B. Compare the last value with 5:
 
-Deque:
+    -3 < 5 -> True
 
-[2, 3]
-
-
-STEP B:
-
-Compare the last value with 5.
-
-Last value = -3
-
--3 < 5
-
-True.
-
-Remove index 3.
-
-
-Deque:
-
-[2]
-
+Remove index 3:
+    deque_indices = [2]
 
 Compare again:
 
-Last value = -1
+    -1 < 5 -> True
 
--1 < 5
+Remove index 2:
+    deque_indices = []
 
-True.
+C. Add index 4:
+    deque_indices = [4]
+    Values = [5]
 
-Remove index 2.
-
-
-Deque:
-
-[]
-
-
-STEP C:
-
-Add index 4.
-
-Deque:
-
-[4]
-
-Values:
-
-[5]
-
-
-STEP D:
-
-Maximum:
-
-nums[4] = 5
-
+D. Maximum:
+    nums[4] = 5
 
 Save:
-
-result[2] = 5
-
+    result[2] = 5
 
 Result:
-
-[3, 3, 5, 0, 0, 0]
-
+    [3, 3, 5, 0, 0, 0]
 
 Current window:
-
-[-1, -3, 5]
-
+    [-1, -3, 5]
 
 --------------------------------------------------------
 ITERATION 6
 --------------------------------------------------------
 
 i = 5
+Current number = nums[5] = 3
 
-Current number:
-
-nums[5] = 3
-
-
-STEP A:
-
-Current window starts at:
-
-5 - 3 + 1 = 3
+A. Window start:
+    5 - 3 + 1 = 3
 
 Index 4 is valid.
 
-Nothing is removed.
-
-
-STEP B:
-
-Compare:
-
-5 < 3
-
-False.
+B. Compare:
+    5 < 3 -> False
 
 Keep index 4.
 
+C. Add index 5:
+    deque_indices = [4, 5]
+    Values = [5, 3]
 
-STEP C:
-
-Add index 5.
-
-Deque:
-
-[4, 5]
-
-Values:
-
-[5, 3]
-
-
-STEP D:
-
-Maximum:
-
-nums[4] = 5
-
+D. Maximum:
+    nums[4] = 5
 
 Save:
-
-result[3] = 5
-
+    result[3] = 5
 
 Result:
-
-[3, 3, 5, 5, 0, 0]
-
+    [3, 3, 5, 5, 0, 0]
 
 Current window:
-
-[-3, 5, 3]
-
+    [-3, 5, 3]
 
 --------------------------------------------------------
 ITERATION 7
 --------------------------------------------------------
 
 i = 6
+Current number = nums[6] = 6
 
-Current number:
+A. Window start:
+    6 - 3 + 1 = 4
 
-nums[6] = 6
+Index 4 is valid.
 
+B. Compare the last value with 6:
 
-STEP A:
+    3 < 6 -> True
 
-Current window starts at:
-
-6 - 3 + 1 = 4
-
-Index 4 is still valid.
-
-Nothing is removed.
-
-
-STEP B:
-
-Compare the last value with 6.
-
-3 < 6
-
-True.
-
-Remove index 5.
-
-
-Deque:
-
-[4]
-
+Remove index 5:
+    deque_indices = [4]
 
 Compare again:
 
-5 < 6
+    5 < 6 -> True
 
-True.
+Remove index 4:
+    deque_indices = []
 
-Remove index 4.
+C. Add index 6:
+    deque_indices = [6]
+    Values = [6]
 
-
-Deque:
-
-[]
-
-
-STEP C:
-
-Add index 6.
-
-Deque:
-
-[6]
-
-Values:
-
-[6]
-
-
-STEP D:
-
-Maximum:
-
-nums[6] = 6
-
+D. Maximum:
+    nums[6] = 6
 
 Save:
-
-result[4] = 6
-
+    result[4] = 6
 
 Result:
-
-[3, 3, 5, 5, 6, 0]
-
+    [3, 3, 5, 5, 6, 0]
 
 Current window:
-
-[5, 3, 6]
-
+    [5, 3, 6]
 
 --------------------------------------------------------
 ITERATION 8
 --------------------------------------------------------
 
 i = 7
+Current number = nums[7] = 7
 
-Current number:
-
-nums[7] = 7
-
-
-STEP A:
-
-Current window starts at:
-
-7 - 3 + 1 = 5
+A. Window start:
+    7 - 3 + 1 = 5
 
 Index 6 is valid.
 
-Nothing is removed.
+B. Compare:
+    6 < 7 -> True
 
+Remove index 6:
+    deque_indices = []
 
-STEP B:
+C. Add index 7:
+    deque_indices = [7]
+    Values = [7]
 
-Compare:
-
-6 < 7
-
-True.
-
-Remove index 6.
-
-
-Deque:
-
-[]
-
-
-STEP C:
-
-Add index 7.
-
-Deque:
-
-[7]
-
-Values:
-
-[7]
-
-
-STEP D:
-
-Maximum:
-
-nums[7] = 7
-
+D. Maximum:
+    nums[7] = 7
 
 Save:
+    result[5] = 7
 
-result[5] = 7
-
-
-Final result:
-
-[3, 3, 5, 5, 6, 7]
+FINAL RESULT:
+    [3, 3, 5, 5, 6, 7]
 
 
 7. TIME COMPLEXITY
 --------------------------------------------------------
 
-O(N)
+TIME COMPLEXITY: O(N)
 
-Where:
+N means the number of elements in nums.
 
-N = len(nums)
+WHY O(N)?
 
+We visit every number once:
 
-Why O(N)?
-
-We visit every number once using:
-
-for i in range(n)
-
+    for i in range(n):
 
 But what about the two while loops?
 
@@ -1616,50 +907,34 @@ Do they make the algorithm O(N * K)?
 
 No.
 
-
 IMPORTANT:
 
 Every index is:
-
 1. Added to the deque once.
 2. Removed from the deque at most once.
 
-An index can leave the deque from the front
-or from the back.
-
+An index can be removed from the front or the back.
 It cannot be removed twice.
 
+Therefore, the total number of deque operations
+across the whole algorithm is O(N).
 
-Therefore:
+FINAL TIME COMPLEXITY:
 
-The total number of deque operations across
-the entire algorithm is O(N).
+    O(N)
 
+COMPARE WITH BRUTE FORCE:
 
-Final time complexity:
-
-O(N)
-
-
-COMPARE WITH THE BRUTE FORCE APPROACH:
-
-Brute force:
-
-Check every number inside every window.
+Brute force checks every number inside every window.
 
 Time complexity:
+    O(N * K)
 
-O(N * K)
-
-
-Deque solution:
-
-Each index is added once and removed at most once.
+Deque solution processes every index at most
+a constant number of times.
 
 Time complexity:
-
-O(N)
-
+    O(N)
 
 This is why the deque solution is faster.
 
@@ -1667,39 +942,21 @@ This is why the deque solution is faster.
 8. SPACE COMPLEXITY
 --------------------------------------------------------
 
-O(N) including the output list.
+A deque can store at most K indices.
 
-Let's separate the memory.
+Deque space:
+    O(K)
 
+The result contains N - K + 1 numbers.
 
-Deque:
-
-The deque can store at most K indices.
-
-Space:
-
-O(K)
-
-
-Result:
-
-The result contains:
-
-N - K + 1 numbers.
-
-Space:
-
-O(N - K + 1)
-
+Output space:
+    O(N - K + 1)
 
 Total space:
-
-O(K + N - K + 1)
+    O(K + N - K + 1)
 
 Simplified:
-
-O(N)
-
+    O(N)
 
 IMPORTANT:
 
@@ -1709,166 +966,36 @@ the extra working space is O(K).
 This is because the deque stores at most K indices.
 
 
-9. TEST CASES
+9. MY LEARNING CHECKLIST
 --------------------------------------------------------
 
-Test 1:
-
-Input:
-nums = [1, 3, -1, -3, 5, 3, 6, 7]
-k = 3
-
-Expected:
-[3, 3, 5, 5, 6, 7]
-
-
-Test 2:
-
-Input:
-nums = [1]
-k = 1
-
-Expected:
-[1]
-
-
-Test 3:
-
-Input:
-nums = [1, -1]
-k = 1
-
-Expected:
-[1, -1]
-
-
-Test 4:
-
-Input:
-nums = [9, 11]
-k = 2
-
-Expected:
-[11]
-
-
-Test 5:
-
-Input:
-nums = [4, -2]
-k = 2
-
-Expected:
-[4]
-
-
-Test 6:
-
-Input:
-nums = [7, 2, 4]
-k = 2
-
-Expected:
-[7, 4]
-
-
-Test 7:
-
-Input:
-nums = [5, 5, 5, 5]
-k = 2
-
-Expected:
-[5, 5, 5]
-
-
-Test 8:
-
-Input:
-nums = [9, 8, 7, 6, 5]
-k = 3
-
-Expected:
-[9, 8, 7]
-
-
-Test 9:
-
-Input:
-nums = [-7, -8, -6, -5, -9]
-k = 2
-
-Expected:
-[-7, -6, -5, -5]
-
-
-Test 10:
-
-Input:
-nums = [1, 3, 1, 2, 0, 5]
-k = 3
-
-Expected:
-[3, 3, 2, 5]
-
-
-========================================================
-MY LEARNING CHECKLIST
-========================================================
-
 [ ] I understand what a sliding window is.
-
 [ ] I understand what the maximum means.
-
-[ ] I understand why the window moves one position
-    to the right.
-
+[ ] I understand why the window moves right.
 [ ] I understand what a deque is.
-
 [ ] I understand why we use collections.deque.
-
-[ ] I understand why the deque stores indices,
-    not actual numbers.
-
-[ ] I understand deque[0].
-
-[ ] I understand deque[-1].
-
+[ ] I understand why the deque stores indices.
+[ ] I understand deque_indices[0].
+[ ] I understand deque_indices[-1].
 [ ] I understand append().
-
 [ ] I understand popleft().
-
 [ ] I understand pop().
-
 [ ] I understand why we remove expired indices.
-
 [ ] I understand why we remove smaller values.
-
-[ ] I understand why the largest value stays
-    at the front.
-
+[ ] I understand why the largest value stays at the front.
 [ ] I understand the expression i - k + 1.
-
 [ ] I understand why we use i >= k - 1.
-
-[ ] I understand how result is created.
-
+[ ] I understand how the result list is created.
 [ ] I understand how the maximum is saved.
-
-[ ] I understand the complete dry run.
-
-[ ] I understand why the time complexity is O(N).
-
-[ ] I understand why the deque uses O(K) space.
-
+[ ] I can explain the complete dry run.
+[ ] I understand why time complexity is O(N).
+[ ] I understand why deque space is O(K).
 [ ] I can write this solution without looking.
 
 
-========================================================
 10. TESTING THE SOLUTION
-========================================================
+--------------------------------------------------------
 """
-
 
 solution = Solution()
 
@@ -1883,15 +1010,12 @@ test_cases = [
     ([9, 8, 7, 6, 5], 3, [9, 8, 7]),
     ([-7, -8, -6, -5, -9], 2, [-7, -6, -5, -5]),
     ([1, 3, 1, 2, 0, 5], 3, [3, 3, 2, 5]),
-
-    # Additional edge cases
     ([], 1, []),
     ([1, 2, 3], 0, []),
     ([1, 2, 3], 4, []),
     ([3, 3, 3], 1, [3, 3, 3]),
     ([10, 9, 8, 7], 4, [10])
 ]
-
 
 passed = 0
 
@@ -1914,7 +1038,6 @@ for nums, k, expected in test_cases:
         print("Status: FAIL")
 
     print("--------------------------------------")
-
 
 print(
     "FINAL RESULT:",
