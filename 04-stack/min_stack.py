@@ -199,8 +199,7 @@ class MinStack:
     # Node class: stores one element of the stack
     class Node:
 
-        def __init__(self, val: int, min_val: int,
-                     next_node: Node | None):
+        def __init__(self, val: int, min_val: int, next_node):
 
             self.val = val
             self.min = min_val
